@@ -90,20 +90,6 @@ export default function PatientDashboard() {
     }
   };
 
-  const getStatusBadge = (status: string) => {
-    const variants: any = {
-      pending: 'default',
-      approved: 'default',
-      rejected: 'destructive'
-    };
-    
-    return (
-      <Badge variant={variants[status] || 'default'}>
-        {status.toUpperCase()}
-      </Badge>
-    );
-  };
-
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
