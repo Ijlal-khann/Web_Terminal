@@ -3,12 +3,6 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 
 export default function PatientDashboard() {
@@ -96,20 +90,6 @@ export default function PatientDashboard() {
     }
   };
 
-  const getStatusBadge = (status: string) => {
-    const variants: any = {
-      pending: 'default',
-      approved: 'default',
-      rejected: 'destructive'
-    };
-    
-    return (
-      <Badge variant={variants[status] || 'default'}>
-        {status.toUpperCase()}
-      </Badge>
-    );
-  };
-
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -119,141 +99,234 @@ export default function PatientDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
-      <div className="max-w-6xl mx-auto space-y-6">
-        {/* Header */}
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold">Patient Dashboard</h1>
-            <p className="text-gray-600">Welcome, {user?.name}</p>
+    <div className="min-h-screen p-6">
+      {/* Animated Background */}
+      <div className="fixed top-0 right-0 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl floating-animation"></div>
+      <div className="fixed bottom-0 left-0 w-80 h-80 bg-pink-500/10 rounded-full blur-3xl floating-animation" style={{animationDelay: '2s'}}></div>
+      
+      <div className="max-w-7xl mx-auto space-y-6 relative z-10">
+        {/* Modern Header */}
+        <div className="glass-card rounded-3xl p-6">
+          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-3xl pulse-glow">
+                👤
+              </div>
+              <div>
+                <h1 className="text-4xl font-bold gradient-text">Patient Portal</h1>
+                <p className="text-gray-400 text-lg">Welcome back, {user?.name}!</p>
+              </div>
+            </div>
+            <div className="flex gap-3 items-center">
+              <div className="glass-card rounded-2xl px-4 py-2 flex items-center gap-2">
+                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                <span className="text-sm text-gray-300">{notifications.length} New</span>
+              </div>
+              <button
+                onClick={handleLogout}
+                className="px-6 py-3 rounded-2xl border-2 border-red-500/50 text-red-300 font-semibold hover:bg-red-500/10 transition-all duration-300"
+              >
+                Logout
+              </button>
+            </div>
           </div>
-          <div className="flex gap-2 items-center">
-            <Badge variant="outline" className="text-sm">
-              {notifications.length} Notifications
-            </Badge>
-            <Button variant="outline" onClick={handleLogout}>
-              Logout
-            </Button>
+        </div>
+
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="glass-card-hover rounded-2xl p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-gray-400 text-sm mb-1">Total Appointments</p>
+                <h3 className="text-3xl font-bold text-white">{appointments.length}</h3>
+              </div>
+              <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-2xl">
+                📅
+              </div>
+            </div>
+          </div>
+          <div className="glass-card-hover rounded-2xl p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-gray-400 text-sm mb-1">Pending</p>
+                <h3 className="text-3xl font-bold text-yellow-400">
+                  {appointments.filter(a => a.status === 'pending').length}
+                </h3>
+              </div>
+              <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-yellow-500 to-orange-500 flex items-center justify-center text-2xl">
+                ⏳
+              </div>
+            </div>
+          </div>
+          <div className="glass-card-hover rounded-2xl p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-gray-400 text-sm mb-1">Approved</p>
+                <h3 className="text-3xl font-bold text-green-400">
+                  {appointments.filter(a => a.status === 'approved').length}
+                </h3>
+              </div>
+              <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center text-2xl">
+                ✅
+              </div>
+            </div>
           </div>
         </div>
 
         {/* Notifications */}
         {notifications.length > 0 && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Recent Notifications</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                {notifications.slice(0, 5).map((notif, idx) => (
-                  <div key={idx} className="p-3 bg-blue-50 rounded-lg border border-blue-200">
-                    <p className="text-sm">{notif.message}</p>
-                    <p className="text-xs text-gray-500 mt-1">
-                      {new Date(notif.createdAt).toLocaleString()}
-                    </p>
-                  </div>
-                ))}
+          <div className="glass-card rounded-3xl p-6">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-xl">
+                🔔
               </div>
-            </CardContent>
-          </Card>
+              <h2 className="text-2xl font-bold text-white">Recent Notifications</h2>
+            </div>
+            <div className="space-y-3">
+              {notifications.slice(0, 5).map((notif, idx) => (
+                <div key={idx} className="glass-card rounded-2xl p-4 border border-purple-500/30 hover:border-pink-500/50 transition-all duration-300">
+                  <p className="text-white">{notif.message}</p>
+                  <p className="text-xs text-gray-500 mt-2">
+                    {new Date(notif.createdAt).toLocaleString()}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
         )}
 
         {/* Create Appointment Form */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Book New Appointment</CardTitle>
-            <CardDescription>Schedule an appointment with a doctor</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleCreateAppointment} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="doctor">Select Doctor</Label>
-                <select
-                  id="doctor"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={formData.doctorEmail}
-                  onChange={(e) => {
-                    const selectedDoctor = doctors.find(d => d.email === e.target.value);
-                    setFormData({ 
-                      ...formData, 
-                      doctorEmail: e.target.value,
-                      doctorName: selectedDoctor?.name || ''
-                    });
-                  }}
-                  required
-                >
-                  <option value="">Choose a doctor...</option>
-                  {doctors.map((doctor) => (
-                    <option key={doctor.email} value={doctor.email}>
-                      Dr. {doctor.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="date">Appointment Date & Time</Label>
-                <Input
-                  id="date"
-                  type="datetime-local"
-                  value={formData.date}
-                  onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="reason">Reason for Visit</Label>
-                <textarea
-                  id="reason"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  rows={4}
-                  placeholder="Describe your symptoms or reason for visit..."
-                  value={formData.reason}
-                  onChange={(e) => setFormData({ ...formData, reason: e.target.value })}
-                  required
-                />
-              </div>
-              <Button type="submit">Book Appointment</Button>
-            </form>
-          </CardContent>
-        </Card>
+        <div className="glass-card rounded-3xl p-8 pulse-glow">
+          <div className="flex items-center gap-3 mb-8">
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center text-2xl">
+              ➕
+            </div>
+            <div>
+              <h2 className="text-3xl font-bold text-white">Book Appointment</h2>
+              <p className="text-gray-400">Schedule a visit with your doctor</p>
+            </div>
+          </div>
+          
+          <form onSubmit={handleCreateAppointment} className="space-y-6">
+            <div className="space-y-3">
+              <label htmlFor="doctor" className="block text-sm font-semibold text-cyan-300">
+                Select Doctor
+              </label>
+              <select
+                id="doctor"
+                className="w-full px-4 py-4 input-glow"
+                value={formData.doctorEmail}
+                onChange={(e) => {
+                  const selectedDoctor = doctors.find(d => d.email === e.target.value);
+                  setFormData({ 
+                    ...formData, 
+                    doctorEmail: e.target.value,
+                    doctorName: selectedDoctor?.name || ''
+                  });
+                }}
+                required
+              >
+                <option value="">Choose a doctor...</option>
+                {doctors.map((doctor) => (
+                  <option key={doctor.email} value={doctor.email}>
+                    Dr. {doctor.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="space-y-3">
+              <label htmlFor="date" className="block text-sm font-semibold text-cyan-300">
+                Appointment Date & Time
+              </label>
+              <input
+                id="date"
+                type="datetime-local"
+                className="w-full px-4 py-4 input-glow"
+                value={formData.date}
+                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                required
+              />
+            </div>
+
+            <div className="space-y-3">
+              <label htmlFor="reason" className="block text-sm font-semibold text-cyan-300">
+                Reason for Visit
+              </label>
+              <textarea
+                id="reason"
+                className="w-full px-4 py-4 input-glow resize-none"
+                rows={4}
+                placeholder="Describe your symptoms or reason for visit..."
+                value={formData.reason}
+                onChange={(e) => setFormData({ ...formData, reason: e.target.value })}
+                required
+              />
+            </div>
+
+            <button type="submit" className="w-full py-4 gradient-button">
+              Book Appointment 🗓️
+            </button>
+          </form>
+        </div>
 
         {/* Appointments List */}
-        <Card>
-          <CardHeader>
-            <CardTitle>My Appointments</CardTitle>
-            <CardDescription>View and track your appointments</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {appointments.length === 0 ? (
-              <p className="text-center text-gray-500 py-8">No appointments yet</p>
-            ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Reason</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Created</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
+        <div className="glass-card rounded-3xl p-8">
+          <div className="flex items-center gap-3 mb-8">
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-pink-500 to-rose-500 flex items-center justify-center text-2xl">
+              📋
+            </div>
+            <div>
+              <h2 className="text-3xl font-bold text-white">My Appointments</h2>
+              <p className="text-gray-400">View and track your appointments</p>
+            </div>
+          </div>
+          
+          {appointments.length === 0 ? (
+            <div className="text-center py-16">
+              <div className="text-6xl mb-4">📅</div>
+              <p className="text-gray-400 text-lg">No appointments yet</p>
+              <p className="text-gray-500 text-sm">Book your first appointment above</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-white/10">
+                    <th className="text-left py-4 px-4 text-purple-300 font-semibold">Date & Time</th>
+                    <th className="text-left py-4 px-4 text-purple-300 font-semibold">Reason</th>
+                    <th className="text-left py-4 px-4 text-purple-300 font-semibold">Status</th>
+                    <th className="text-left py-4 px-4 text-purple-300 font-semibold">Created</th>
+                  </tr>
+                </thead>
+                <tbody>
                   {appointments.map((appointment) => (
-                    <TableRow key={appointment._id}>
-                      <TableCell>
+                    <tr key={appointment._id} className="border-b border-white/5 table-row-hover">
+                      <td className="py-4 px-4 text-white">
                         {new Date(appointment.date).toLocaleString()}
-                      </TableCell>
-                      <TableCell>{appointment.reason}</TableCell>
-                      <TableCell>{getStatusBadge(appointment.status)}</TableCell>
-                      <TableCell>
+                      </td>
+                      <td className="py-4 px-4 text-gray-300">{appointment.reason}</td>
+                      <td className="py-4 px-4">
+                        <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                          appointment.status === 'approved' 
+                            ? 'bg-green-500/20 text-green-300 border border-green-500/50' 
+                            : appointment.status === 'rejected'
+                            ? 'bg-red-500/20 text-red-300 border border-red-500/50'
+                            : 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/50'
+                        }`}>
+                          {appointment.status.toUpperCase()}
+                        </span>
+                      </td>
+                      <td className="py-4 px-4 text-gray-400">
                         {new Date(appointment.createdAt).toLocaleDateString()}
-                      </TableCell>
-                    </TableRow>
+                      </td>
+                    </tr>
                   ))}
-                </TableBody>
-              </Table>
-            )}
-          </CardContent>
-        </Card>
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

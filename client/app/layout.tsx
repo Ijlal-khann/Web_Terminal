@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Healthcare Appointment System",
-  description: "Smart Healthcare Appointment System with Next.js and Express Microservices",
+  title: "MediCare Portal - Next-Gen Healthcare",
+  description: "Next-generation healthcare management system with real-time notifications and seamless appointment booking powered by Apache Kafka",
 };
 
 export default function RootLayout({
